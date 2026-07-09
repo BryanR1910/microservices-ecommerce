@@ -71,4 +71,22 @@ public class InventoryServiceImpl implements InventoryService {
         log.info("Inventario actualizado para el ID: {}", id);
         return inventoryMapper.toResponse(updateInventory);
     }
+
+    @Override
+    @Transactional
+    public void reduceStock(String sku, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
+        var inventory = inventoryRepository
+                .findBySku(sku)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + sku));
+        if (inventory.getQuantity() < quantity) {
+            throw new RuntimeException("Stock insuficiente para: " + sku);
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        inventoryRepository.save(inventory);
+    }
 }

@@ -4,6 +4,7 @@ import com.ecommerce.inventory_service.dto.InventoryRequestDTO;
 import com.ecommerce.inventory_service.dto.InventoryResponseDTO;
 import com.ecommerce.inventory_service.service.InventoryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,5 +50,12 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteInventory(@PathVariable Long id) {
         inventoryService.deleteInventory(id);
+    }
+
+    @PutMapping("/reduce/{sku}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public String reduceStock(@PathVariable String sku, @RequestParam @Positive Integer quantity) {
+        inventoryService.reduceStock(sku, quantity);
+        return "Stock reducido exitosamente";
     }
 }

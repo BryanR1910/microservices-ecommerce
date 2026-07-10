@@ -13,21 +13,31 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@RefreshScope
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     // private final WebClient.Builder webClientBuilder;
     private final InventoryClient inventoryClient;
 
+    @Value("${order.enabled:true}")
+    private boolean ordersEnabled;
+
     @Override
     @Transactional
     public OrderResponseDTO placeOrder(OrderRequestDTO orderRequest) {
+        if (!ordersEnabled) {
+            log.warn("Pedido rechazado: Servicio deshabilitado por configuracion.");
+            throw new RuntimeException("El servicio de pedidos esta actualmente en mantenimiento. Intente mas tarde.");
+        }
         log.info("Colocando nueva orden...");
 
         // Mapeo manual de items para asegurar la lista

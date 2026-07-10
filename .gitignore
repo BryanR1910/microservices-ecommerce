@@ -4,4 +4,5 @@
 /inventory-service/.atl
 /inventory-service/run-dev.sh
 /order-service/.atl
+/discovery-server/.atl
 /docs
